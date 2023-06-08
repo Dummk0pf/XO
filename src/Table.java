@@ -1,4 +1,5 @@
 import java.util.Scanner;
+
 import java.util.Arrays;
 
 public class Table {
@@ -12,59 +13,83 @@ public class Table {
     public Table(Scanner s){
         this.s = s;
     }
+    public void onePlayerMode(){
 
-    public void twoPlayerMode(){
+    }
+
+    public char twoPlayerMode(char turn){
+        boolean Turn = (turn == 'X')?true:false;
+        boolean xWins = false;
+        boolean oWins = false;
         System.out.println("Entering Two player Mode .. .. ");
         System.out.println("Dramatic Music plays ....");
         displayTable();
 
-        while(true && (moveCounter++ <= 1000)){
-            System.out.print("Enter the position for marking 'X'(row column): ");
-            int rowPosPlayerX = s.nextInt();
-            int colPosPlayerX = s.nextInt();
-            while(!(validPosition(rowPosPlayerX, colPosPlayerX))){
-                System.out.println("You are placing in a pre-occupied or invalid position...");
-                System.out.print("Enter the position for marking 'X'(row column): ");
-                rowPosPlayerX = s.nextInt();
-                colPosPlayerX = s.nextInt();
-            }
-            table[rowPosPlayerX][colPosPlayerX] = 1;
-            displayTable();
-            if(checkPosition(rowPosPlayerX, colPosPlayerX)){
-                System.out.println("Player X wins !!! ;)");
+        while((!xWins || !oWins) && (moveCounter++ <= 1000)){
+            if(Turn){
+                xWins = xMove();
+                if(xWins||isDraw())
+                break;
+                oWins = oMove();
+                if(oWins||isDraw())
                 break;
             }
-            else if(isFull()){
-                System.out.println("Draw !!!");
+            else{
+                oWins = oMove();
+                if(oWins||isDraw())
                 break;
-            }
-            
-            System.out.print("Enter the position for marking 'O'(row column): ");
-            int rowPosPlayerO = s.nextInt();
-            int colPosPlayerO = s.nextInt();
-            while(!(validPosition(rowPosPlayerO, colPosPlayerO))){
-                System.out.println("You are placing in a pre-occupied or invalid position...");
-                System.out.print("Enter the position for marking 'X'(row column): ");
-                rowPosPlayerO = s.nextInt();
-                colPosPlayerO = s.nextInt();
-            }
-            table[rowPosPlayerO][colPosPlayerO] = 0;
-            displayTable();
-            if(checkPosition(rowPosPlayerO, colPosPlayerO)){
-                System.out.println("Player O wins!!!");
-                break;
-            }
-            else if(isFull()){
-                System.out.println("Draw !!!");
+                xWins = xMove();
+                if(xWins||isDraw())
                 break;
             }
         }
-        if(tooManyPlays(moveCounter)){
-            return;
-        }
+        if(xWins)
+        return 'O';
+        if(oWins)
+        return 'X';
+        else
+        return 'X';
     }
-
-
+    
+    public boolean xMove(){
+        System.out.print("Enter the position for marking 'X'(row column): ");
+        int rowPosPlayerX = s.nextInt();
+        int colPosPlayerX = s.nextInt();
+        while(!(validPosition(rowPosPlayerX, colPosPlayerX))){
+            System.out.println("You are placing in a pre-occupied or invalid position...");
+            System.out.print("Enter the position for marking 'X'(row column): ");
+            rowPosPlayerX = s.nextInt();
+            colPosPlayerX = s.nextInt();
+        }
+        table[rowPosPlayerX][colPosPlayerX] = 1;
+        displayTable();
+        if(checkPosition(rowPosPlayerX, colPosPlayerX)){
+            System.out.println("Player X wins !!! ;)");
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean oMove(){
+        System.out.print("Enter the position for marking 'O'(row column): ");
+        int rowPosPlayerO = s.nextInt();
+        int colPosPlayerO = s.nextInt();
+        while(!(validPosition(rowPosPlayerO, colPosPlayerO))){
+            System.out.println("You are placing in a pre-occupied or invalid position...");
+            System.out.print("Enter the position for marking 'O'(row column): ");
+            rowPosPlayerO = s.nextInt();
+            colPosPlayerO = s.nextInt();
+        }
+        table[rowPosPlayerO][colPosPlayerO] = 0;
+        displayTable();
+        if(checkPosition(rowPosPlayerO, colPosPlayerO)){
+            System.out.println("Player O wins!!!");
+            return true;
+        }
+        return false;
+    }
+    
+    
     public void displayTable(){
         int rows = table.length;
         int columns = table[0].length;
@@ -76,13 +101,13 @@ public class Table {
             System.out.println();
         }
     }
-
+    
     public boolean checkPosition(int lastRow,int lastCol){
         boolean result = false;
         boolean rowFlag = true;
         boolean colFlag = true;
         boolean diaFlag = true;
-
+        
         int length = table.length;
         int lastMove = table[lastRow][lastCol];
         for(int i=0;i<length;i++){
@@ -124,20 +149,21 @@ public class Table {
         }
         if(diaFlag)
         return !result;
-
+        
         return result;
     }
-
-    public boolean isFull(){
+    
+    public boolean isDraw(){
         String tableString = Arrays.deepToString(table);
         if(tableString.contains("-1")){
             return false;
         }
         else{
+            System.out.println("Draw !!!");
             return true;
         }
     }
-
+    
     public boolean validPosition(int rowPos,int colPos){
         if((rowPos>=0 && rowPos<=2)&& (colPos>=0 && colPos<=2)  && table[rowPos][colPos] == -1)
         return true;
