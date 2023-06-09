@@ -3,6 +3,7 @@ import java.util.Scanner;
 public class App {
     public static void main(String[] args) throws Exception {
         Scanner s = new Scanner(System.in);
+        char onePlayerTurn;
         char twoPlayerTurn = 'X';
         while(true){
             Table table = new Table(s);
@@ -16,7 +17,9 @@ public class App {
             System.out.print("Enter your choice(1/2/3): ");
             int choice = s.nextInt();
             if(choice == 1){
-                table.onePlayerMode();
+                System.out.print("Do you want to Move First (X) or Second (O): ");
+                onePlayerTurn = s.next().charAt(0);
+                table.onePlayerMode(onePlayerTurn);
             }
             else if(choice == 2){
                 twoPlayerTurn = table.twoPlayerMode(twoPlayerTurn);

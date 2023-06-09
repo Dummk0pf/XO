@@ -1,20 +1,61 @@
 import java.util.Scanner;
-
 import java.util.Arrays;
 
-public class Table {
-    private int[][] table = {{-1,-1,-1},{-1,-1,-1},{-1,-1,-1}};
+public class Table implements TablePosition{
     //-1 indicates that the position is empty
     // 0 indicates that the position is a O
     // 1 indicates that the position is a X
-    private int moveCounter = 0;
     private Scanner s;
 
     public Table(Scanner s){
         this.s = s;
+        moveCounter[0] = -1;
+        setPosition(table);
+        setPosition(xPosition);
+        setPosition(oPosition);
     }
-    public void onePlayerMode(){
+    
+    public void setPosition(int[][] state){
+        for(int[] row:state)
+        Arrays.fill(row,-1);
+    }
 
+    public void onePlayerMode(char turn) throws Exception{
+        boolean Turn = true;
+        boolean xWins = false;
+        boolean oWins = false;
+        int engineturn = 0;
+
+        if(turn == 'X'){
+            Turn = true;
+            engineturn = 0;
+        }
+        else if(turn == 'O'){
+            Turn = false;
+            engineturn = 1;
+        }
+        XOEngine engine = new XOEngine(engineturn);
+        System.out.println("Entering One player Mode .. .. ");
+        System.out.println("du bist bereits tot ....");
+    
+        while((!xWins || !oWins) && (moveCounter[0]++ <= 500)){
+            if(Turn){
+                xWins = xMove();
+                if(xWins||isDraw())
+                break;
+                oWins = oEngineMove(engine);
+                if(oWins||isDraw())
+                break;
+            }
+            else{
+                xWins = xEngineMove(engine);
+                if(xWins||isDraw())
+                break;
+                oWins = oMove();
+                if(oWins||isDraw())
+                break;
+            }
+        }
     }
 
     public char twoPlayerMode(char turn){
@@ -25,7 +66,7 @@ public class Table {
         System.out.println("Dramatic Music plays ....");
         displayTable();
 
-        while((!xWins || !oWins) && (moveCounter++ <= 1000)){
+        while((!xWins || !oWins) && (moveCounter[0]++ <= 1000)){
             if(Turn){
                 xWins = xMove();
                 if(xWins||isDraw())
@@ -43,6 +84,8 @@ public class Table {
                 break;
             }
         }
+        if(tooManyPlays(moveCounter[0]))
+        return turn;
         if(xWins)
         return 'O';
         if(oWins)
@@ -61,6 +104,8 @@ public class Table {
             rowPosPlayerX = s.nextInt();
             colPosPlayerX = s.nextInt();
         }
+        xPosition[moveCounter[0]][0] = rowPosPlayerX;
+        xPosition[moveCounter[0]][1] = colPosPlayerX;
         table[rowPosPlayerX][colPosPlayerX] = 1;
         displayTable();
         if(checkPosition(rowPosPlayerX, colPosPlayerX)){
@@ -80,12 +125,43 @@ public class Table {
             rowPosPlayerO = s.nextInt();
             colPosPlayerO = s.nextInt();
         }
+        oPosition[moveCounter[0]][0] = rowPosPlayerO;
+        oPosition[moveCounter[0]][1] = colPosPlayerO;
         table[rowPosPlayerO][colPosPlayerO] = 0;
         displayTable();
         if(checkPosition(rowPosPlayerO, colPosPlayerO)){
             System.out.println("Player O wins!!!");
             return true;
         }
+        return false;
+    }
+
+    public boolean xEngineMove(XOEngine engine) throws Exception{
+        System.out.println(";)");
+        int[] enginemove = engine.nextMove();
+        // System.out.println(Arrays.toString(enginemove));
+        xPosition[moveCounter[0]][0] = enginemove[0];
+        xPosition[moveCounter[0]][1] = enginemove[1];
+        table[enginemove[0]][enginemove[1]] = 1;
+        displayTable();
+        if(checkPosition(enginemove[0],enginemove[1])){
+            System.out.println("Elementary my dear Player :)");
+            return true;
+        }   
+        return false;
+    }
+
+    public boolean oEngineMove(XOEngine engine) throws Exception{
+        System.out.print(";)");
+        int[] enginemove = engine.nextMove();
+        oPosition[moveCounter[0]][0] = enginemove[0];
+        oPosition[moveCounter[0]][1] = enginemove[1];
+        table[enginemove[0]][enginemove[1]] = 0;
+        displayTable();
+        if(checkPosition(enginemove[0],enginemove[1])){
+            System.out.println("Elementary my dear Player :)");
+            return true;
+        }   
         return false;
     }
     
@@ -172,7 +248,7 @@ public class Table {
     }
 
     public boolean tooManyPlays(int moves){
-        if(moves >= 1000){
+        if(moves >= 500){
             System.out.println("It's Over 1000!!!");
             return true;
         }
