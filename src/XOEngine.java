@@ -10,7 +10,7 @@ public class XOEngine implements TablePosition{
         int[] start = new int[2];
         if(turn == 1){
             start[0] = 0;
-            start[1] = 0;
+            start[1] = 1;
         }
         else{
             if(table[1][1] == -1){
