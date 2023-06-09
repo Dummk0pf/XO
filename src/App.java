@@ -19,6 +19,10 @@ public class App {
             if(choice == 1){
                 System.out.print("Do you want to Move First (X) or Second (O): ");
                 onePlayerTurn = s.next().charAt(0);
+                onePlayerTurn = Character.toUpperCase(onePlayerTurn);
+                while((onePlayerTurn != 'X')||(onePlayerTurn != 'O')){
+                    System.out.println("Enter a valid character between (X) and (O)");
+                }
                 table.onePlayerMode(onePlayerTurn);
             }
             else if(choice == 2){
