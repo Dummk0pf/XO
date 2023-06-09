@@ -37,7 +37,8 @@ public class Table implements TablePosition{
         XOEngine engine = new XOEngine(engineturn);
         System.out.println("Entering One player Mode .. .. ");
         System.out.println("du bist bereits tot ....");
-    
+        displayTable();
+        
         while((!xWins || !oWins) && (moveCounter[0]++ <= 500)){
             if(Turn){
                 xWins = xMove();
@@ -152,7 +153,7 @@ public class Table implements TablePosition{
     }
 
     public boolean oEngineMove(XOEngine engine) throws Exception{
-        System.out.print(";)");
+        System.out.println(";)");
         int[] enginemove = engine.nextMove();
         oPosition[moveCounter[0]][0] = enginemove[0];
         oPosition[moveCounter[0]][1] = enginemove[1];

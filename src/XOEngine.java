@@ -7,7 +7,21 @@ public class XOEngine implements TablePosition{
 
     public int[] getStartingPosition(){
         //create random starting position if it works
-        int[] start = {0,0};
+        int[] start = new int[2];
+        if(turn == 1){
+            start[0] = 0;
+            start[1] = 0;
+        }
+        else{
+            if(table[1][1] == -1){
+                start[0] = 1;
+                start[1] = 1;
+            }
+            else{
+                start[0] = 2;
+                start[1] = 0;
+            }
+        }
         return start;
     }
     
@@ -20,6 +34,8 @@ public class XOEngine implements TablePosition{
         else{
             int[] earlymove = priorityFill();
             if(earlymove[0]==-1){
+                int emptyspace = 0;
+                int[] emptyposition = new int[2];
                 int max = priorityTable[0][0];
                 for(int i=0;i<length;i++){
                     for(int j=0;j<table.length;j++){
@@ -28,7 +44,15 @@ public class XOEngine implements TablePosition{
                             nextMove[0] = i;
                             nextMove[1] = j;
                         }
+                        if(priorityTable[i][j] == -1){
+                            emptyspace++;
+                            emptyposition[0] = i;
+                            emptyposition[1] = j;
+                        }
                     }
+                }
+                if((emptyspace == 1)&&(max == priorityTable[0][0])||(table[nextMove[0]][nextMove[1]] != -1)){
+                    nextMove = emptyposition;
                 }
             }
             else{
@@ -67,6 +91,8 @@ public class XOEngine implements TablePosition{
             int[] earlywin = new int[2];
             int[] earlyloss = new int[2];
             for(int i=0;i<rows;i++){
+                if((xPosition[i][0] == -1) || (oPosition[i][0] == -1))
+                break;
                 earlywin = oFill(oPosition[i][0],oPosition[i][1]);
                 earlyloss = xFill(xPosition[i][0],xPosition[i][1]);
                 if((earlywin[0]!=-1) || (earlyloss[0]!=-1))
@@ -109,9 +135,10 @@ public class XOEngine implements TablePosition{
                             starposition[1] = k;
                         }
                     }
+                    if(starposition[0]!=-1)
                     return starposition;
                 }
-
+                
             }
             else if(priorityTable[lastRow][i] >= priority){
                 priorityTable[lastRow][i]++;
@@ -141,6 +168,7 @@ public class XOEngine implements TablePosition{
                             starposition[1] = lastCol;
                         }
                     }
+                    if(starposition[0]!=-1)
                     return starposition;
                 }
             }
@@ -173,6 +201,7 @@ public class XOEngine implements TablePosition{
                                 starposition[1] = length-k-1;
                             }
                         }
+                        if(starposition[0]!=-1)
                         return starposition;
                     }
                 }
@@ -188,7 +217,8 @@ public class XOEngine implements TablePosition{
             }
         }
         
-        else if((lastRow - lastCol) == 0){
+        xCounter = 0;
+        if((lastRow - lastCol) == 0){
             for(int i=0;i<length;i++){
                 if(priorityTable[i][i] == 0){
                     for(int j=0;j<length;j++)
@@ -204,6 +234,7 @@ public class XOEngine implements TablePosition{
                                 starposition[1] = k;
                             }
                         }
+                        if(starposition[0]!=-1)
                         return starposition;
                     }
                 }
@@ -224,7 +255,7 @@ public class XOEngine implements TablePosition{
         int priority = 2;
         int oCounter = 0;
         int[] starposition = {-1,-1};
-
+        
         //Horizontal Filling
         int length = table.length;
         for(int i=0;i<length;i++){
@@ -242,9 +273,10 @@ public class XOEngine implements TablePosition{
                             starposition[1] = k;
                         }
                     }
+                    if(starposition[0]!=-1)
                     return starposition;
                 }
-
+                
             }
             else if(priorityTable[lastRow][i] >= priority){
                 priorityTable[lastRow][i]++;
@@ -274,6 +306,7 @@ public class XOEngine implements TablePosition{
                             starposition[1] = lastCol;
                         }
                     }
+                    if(starposition[0]!=-1)
                     return starposition;
                 }
             }
@@ -294,7 +327,7 @@ public class XOEngine implements TablePosition{
             for(int i=0;i<length;i++){
                 if(priorityTable[i][length-i-1] == 1){
                     for(int j=0;j<length;j++)
-                    priorityTable[i][length-i-1] = table[i][length-i-1];
+                    priorityTable[j][length-j-1] = table[j][length-j-1];
                     break;
                 }
                 else if(priorityTable[i][length-i-1] == 0){
@@ -306,6 +339,7 @@ public class XOEngine implements TablePosition{
                                 starposition[1] = length-k-1;
                             }
                         }
+                        if(starposition[0]!=-1)
                         return starposition;
                     }
                 }
@@ -325,7 +359,7 @@ public class XOEngine implements TablePosition{
             for(int i=0;i<length;i++){
                 if(priorityTable[i][i] == 1){
                     for(int j=0;j<length;j++)
-                    priorityTable[i][i] = table[i][i];
+                    priorityTable[j][j] = table[j][j];
                     break;
                 }
                 else if(priorityTable[i][i] == 0){
@@ -337,6 +371,7 @@ public class XOEngine implements TablePosition{
                                 starposition[1] = k;
                             }
                         }
+                        if(starposition[0]!=-1)
                         return starposition;
                     }
                 }
